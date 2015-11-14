@@ -27,7 +27,11 @@
 
 #include "mempool.h"
 
+#ifdef ESP8266
+#define ENC28J60_CONTROL_CS     5
+#else
 #define ENC28J60_CONTROL_CS     SS
+#endif
 #define SPI_MOSI        MOSI
 #define SPI_MISO        MISO
 #define SPI_SCK         SCK
