@@ -43,11 +43,7 @@
 #define SPI_MISO        MISO
 #define SPI_SCK         SCK
 #endif
-#if (ESP8266) || (ENERGIA)
 #define SPI_SS          ENC28J60_CONTROL_CS
-#else
-#define SPI_SS          SS
-#endif
 
 #define UIP_RECEIVEBUFFERHANDLE 0xff
 
