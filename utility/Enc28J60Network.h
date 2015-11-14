@@ -34,9 +34,15 @@
 #else
 #define ENC28J60_CONTROL_CS     SS
 #endif
+#if defined(ENERGIA)
+#define SPI_MOSI        15
+#define SPI_MISO        14
+#define SPI_SCK         7
+#else
 #define SPI_MOSI        MOSI
 #define SPI_MISO        MISO
 #define SPI_SCK         SCK
+#endif
 #if (ESP8266) || (ENERGIA)
 #define SPI_SS          ENC28J60_CONTROL_CS
 #else
