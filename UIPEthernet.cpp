@@ -221,7 +221,7 @@ UIPEthernetClass::tick()
     }
 
   unsigned long now = millis();
-
+  
 #if UIP_CLIENT_TIMER >= 0
   boolean periodic = (long)( now - periodic_timer ) >= 0;
   for (int i = 0; i < UIP_CONNS; i++)
@@ -244,7 +244,8 @@ UIPEthernetClass::tick()
         }
       else
         {
-          if ((long)( now - ((uip_userdata_t*)uip_conn->appstate)->timer) >= 0)
+//          if ((long)( now - ((uip_userdata_t*)uip_conn->appstate)->timer) >= 0)
+          if ((long)( now - ((uip_userdata_t*)uip_conn)->timer) >= 0)
             uip_process(UIP_POLL_REQUEST);
           else
             continue;
@@ -258,7 +259,7 @@ UIPEthernetClass::tick()
           uip_arp_out();
           network_send();
         }
-    }
+    }   
 #if UIP_CLIENT_TIMER >= 0
   if (periodic)
     {
@@ -270,13 +271,13 @@ UIPEthernetClass::tick()
           uip_udp_periodic(i);
           // If the above function invocation resulted in data that
           // should be sent out on the Enc28J60Network, the global variable
-          // uip_len is set to a value > 0. */
+          // uip_len is set to a value > 0.
           if (uip_len > 0)
             {
               UIPUDP::_send((uip_udp_userdata_t *)(uip_udp_conns[i].appstate));
             }
         }
-#endif /* UIP_UDP */
+#endif // UIP_UDP 
     }
 }
 
