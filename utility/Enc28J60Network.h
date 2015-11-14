@@ -27,15 +27,21 @@
 
 #include "mempool.h"
 
-#ifdef ESP8266
+#if defined(ESP8266)
 #define ENC28J60_CONTROL_CS     5
+#elif defined(ENERGIA)
+#define ENC28J60_CONTROL_CS     6
 #else
 #define ENC28J60_CONTROL_CS     SS
 #endif
 #define SPI_MOSI        MOSI
 #define SPI_MISO        MISO
 #define SPI_SCK         SCK
+#if (ESP8266) || (ENERGIA)
+#define SPI_SS          ENC28J60_CONTROL_CS
+#else
 #define SPI_SS          SS
+#endif
 
 #define UIP_RECEIVEBUFFERHANDLE 0xff
 
