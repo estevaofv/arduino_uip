@@ -244,8 +244,11 @@ UIPEthernetClass::tick()
         }
       else
         {
-//          if ((long)( now - ((uip_userdata_t*)uip_conn->appstate)->timer) >= 0)
+#if (!ESP8266)
+          if ((long)( now - ((uip_userdata_t*)uip_conn->appstate)->timer) >= 0)
+#else          
           if ((long)( now - ((uip_userdata_t*)uip_conn)->timer) >= 0)
+#endif
             uip_process(UIP_POLL_REQUEST);
           else
             continue;
