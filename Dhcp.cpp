@@ -117,6 +117,9 @@ int DhcpClass::request_DHCP_lease(){
         
         if(result != 1 && ((millis() - startTime) > _timeout))
             break;
+#if ESP8266
+      yield();
+#endif            
     }
     
     // We're done with the socket now
@@ -327,7 +330,8 @@ uint8_t DhcpClass::parseDHCPResponse(unsigned long responseTimeout, uint32_t& tr
                 
                 case dhcpServerIdentifier :
                     opt_len = _dhcpUdpSocket.read();
-                    if( *((uint32_t*)_dhcpDhcpServerIp) == 0 || 
+                    if ((_dhcpDhcpServerIp[0] == 0 && _dhcpDhcpServerIp[1] == 0 &&
+                         _dhcpDhcpServerIp[2] == 0 && _dhcpDhcpServerIp[3] == 0) ||
                         IPAddress(_dhcpDhcpServerIp) == _dhcpUdpSocket.remoteIP() )
                     {
                         _dhcpUdpSocket.read(_dhcpDhcpServerIp, sizeof(_dhcpDhcpServerIp));
@@ -337,7 +341,7 @@ uint8_t DhcpClass::parseDHCPResponse(unsigned long responseTimeout, uint32_t& tr
                         // Skip over the rest of this option
                         while (opt_len--)
                         {
-                            _dhcpUdpSocket.read();
+                            _dhcpUdpSocket.read();                            
                         }
                     }
                     break;
@@ -366,10 +370,13 @@ uint8_t DhcpClass::parseDHCPResponse(unsigned long responseTimeout, uint32_t& tr
                     // Skip over the rest of this option
                     while (opt_len--)
                     {
-                        _dhcpUdpSocket.read();
+                        _dhcpUdpSocket.read();                    
                     }
                     break;
             }
+#if ESP8266
+          yield();
+#endif            
         }
     }
 
