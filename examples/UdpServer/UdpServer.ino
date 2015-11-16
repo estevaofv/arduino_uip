@@ -13,7 +13,9 @@
  *
  * Copyright (C) 2013 by Norbert Truchsess (norbert.truchsess@t-online.de)
  */
-
+#if (ESP8266) || (ENERGIA)
+#include "SPI.h"
+#endif
 #include <UIPEthernet.h>
 
 EthernetUDP udp;

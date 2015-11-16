@@ -19,7 +19,9 @@
  by Norbert Truchsess
 
  */
-
+#if (ESP8266) || (ENERGIA)
+#include "SPI.h"
+#endif
 #include <UIPEthernet.h>
 
 // Enter a MAC address and IP address for your controller below.

@@ -17,7 +17,9 @@
  * Ported to the Arduino IDE by Adam Nielsen <malvineous@shikadi.net>
  * Adaption to Enc28J60 by Norbert Truchsess <norbert.truchsess@t-online.de>
  */
-
+#if (ESP8266) || (ENERGIA)
+#include "SPI.h"
+#endif
 #include <UIPEthernet.h>
 
 EthernetServer server = EthernetServer(1000);
