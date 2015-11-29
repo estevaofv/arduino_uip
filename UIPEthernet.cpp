@@ -56,14 +56,14 @@ UIPEthernetClass::UIPEthernetClass()
 
 #if UIP_UDP
 
-#ifdef ESP8266
+#if defined(ESP8266)
 static DhcpClass s_dhcp;
 #endif
 
 int
 UIPEthernetClass::begin(const uint8_t* mac)
 {
-#ifndef ESP8266
+#if !defined(ESP8266)
   static DhcpClass s_dhcp;
 #endif
   _dhcp = &s_dhcp;
