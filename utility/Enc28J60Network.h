@@ -30,7 +30,7 @@
 #if defined(ESP8266)
 #define ENC28J60_CONTROL_CS     5
 #elif defined(ENERGIA)
-#define ENC28J60_CONTROL_CS     6
+#define ENC28J60_CONTROL_CS     10
 #else
 #define ENC28J60_CONTROL_CS     SS
 #endif
