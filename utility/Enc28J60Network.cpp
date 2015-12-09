@@ -24,9 +24,6 @@
 
 #include "Enc28J60Network.h"
 #include "Arduino.h"
-#if (ESP8266) || (ENERGIA)
-#include "SPI.h"
-#endif
 
 extern "C" {
 #if (!ESP8266) && (!ENERGIA)

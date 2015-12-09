@@ -27,6 +27,10 @@
 
 #include "mempool.h"
 
+#if (ESP8266) || (ENERGIA)
+#include "SPI.h"
+#endif
+
 #if defined(ESP8266)
 #define ENC28J60_CONTROL_CS     5
 #elif defined(ENERGIA)
