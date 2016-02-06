@@ -54,6 +54,12 @@ UIPEthernetClass::UIPEthernetClass()
 {
 }
 
+void
+UIPEthernetClass::update()
+{
+  Ethernet.tick();
+}
+
 #if UIP_UDP
 
 #if defined(ESP8266)
@@ -228,7 +234,7 @@ UIPEthernetClass::tick()
     }
 
   unsigned long now = millis();
-  
+
 #if UIP_CLIENT_TIMER >= 0
   boolean periodic = (long)( now - periodic_timer ) >= 0;
   for (int i = 0; i < UIP_CONNS; i++)
@@ -265,7 +271,7 @@ UIPEthernetClass::tick()
           uip_arp_out();
           network_send();
         }
-    }   
+    }
 #if UIP_CLIENT_TIMER >= 0
   if (periodic)
     {
@@ -277,13 +283,13 @@ UIPEthernetClass::tick()
           uip_udp_periodic(i);
           // If the above function invocation resulted in data that
           // should be sent out on the Enc28J60Network, the global variable
-          // uip_len is set to a value > 0.
+          // uip_len is set to a value > 0. */
           if (uip_len > 0)
             {
               UIPUDP::_send((uip_udp_userdata_t *)(uip_udp_conns[i].appstate));
             }
         }
-#endif // UIP_UDP 
+#endif /* UIP_UDP */
     }
 }
 
@@ -297,11 +303,17 @@ boolean UIPEthernetClass::network_send()
       Serial.print(F(", hdrlen: "));
       Serial.println(uip_hdrlen);
 #endif
-      Enc28J60Network::writePacket(uip_packet,0,uip_buf,uip_hdrlen);
+      Enc28J60Network::writePacket(uip_packet,UIP_SENDBUFFER_OFFSET,uip_buf,uip_hdrlen);
       packetstate &= ~ UIPETHERNET_SENDPACKET;
-      goto sendandfree;
+      if (Enc28J60Network::sendPacket(uip_packet))
+        {
+          Enc28J60Network::freeBlock(uip_packet);
+          uip_packet = NOBLOCK;
+          return true;
+        }
+      return false;
     }
-  uip_packet = Enc28J60Network::allocBlock(uip_len);
+  uip_packet = Enc28J60Network::allocBlock(uip_len + UIP_SENDBUFFER_OFFSET + UIP_SENDBUFFER_PADDING);
   if (uip_packet != NOBLOCK)
     {
 #ifdef UIPETHERNET_DEBUG
@@ -310,15 +322,13 @@ boolean UIPEthernetClass::network_send()
       Serial.print(F(", packet: "));
       Serial.println(uip_packet);
 #endif
-      Enc28J60Network::writePacket(uip_packet,0,uip_buf,uip_len);
-      goto sendandfree;
+      Enc28J60Network::writePacket(uip_packet,UIP_SENDBUFFER_OFFSET,uip_buf,uip_len);
+      bool register success = Enc28J60Network::sendPacket(uip_packet);
+      Enc28J60Network::freeBlock(uip_packet);
+      uip_packet = NOBLOCK;
+      return success;
     }
   return false;
-sendandfree:
-  Enc28J60Network::sendPacket(uip_packet);
-  Enc28J60Network::freeBlock(uip_packet);
-  uip_packet = NOBLOCK;
-  return true;
 }
 
 void UIPEthernetClass::init(const uint8_t* mac) {
@@ -452,7 +462,7 @@ uip_tcpchksum(void)
       sum = Enc28J60Network::chksum(
           sum,
           UIPEthernetClass::uip_packet,
-          UIP_IPH_LEN + UIP_LLH_LEN + upper_layer_memlen,
+          (UIPEthernetClass::packetstate & UIPETHERNET_SENDPACKET ? UIP_IPH_LEN + UIP_LLH_LEN + UIP_SENDBUFFER_OFFSET : UIP_IPH_LEN + UIP_LLH_LEN) + upper_layer_memlen,
           upper_layer_len - upper_layer_memlen
       );
 #ifdef UIPETHERNET_DEBUG_CHKSUM

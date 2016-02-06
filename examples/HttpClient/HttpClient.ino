@@ -1,5 +1,5 @@
 /*
- * UIPEthernet TcpClient example.
+ * UIPEthernet HttpClient example by TMRh20
  *
  * UIPEthernet is a TCP/IP stack that can be used with a enc28j60 based
  * Ethernet-shield.
@@ -8,8 +8,8 @@
  *
  *      -----------------
  *
- * This TcpClient example gets its local ip-address via dhcp and sets
- * up a tcp socket-connection to 192.168.0.1 port 5000 every 5 Seconds.
+ * This HttpClient example gets its local ip-address via dhcp and sets
+ * up a tcp socket-connection to google.com port 80 every 5 Seconds.
  * After sending a message it waits for a response. After receiving the
  * response the client disconnects and tries to reconnect after 5 seconds.
  *
@@ -41,31 +41,34 @@ void setup() {
 
   next = 0;
 }
+uint32_t counter = 0;
 
 void loop() {
-
+ 
+  Ethernet.update();
+  
   if (((signed long)(millis() - next)) > 0)
     {
       next = millis() + 5000;
       Serial.println("Client connect");
       // replace hostname with name of machine running tcpserver.pl
 //      if (client.connect("server.local",5000))
-      if (client.connect(IPAddress(192,168,0,1),5000))
+      if (client.connect("www.google.com", 80))
+//      if (client.connect("www.fiikus.net", 80))
         {
           Serial.println("Client connected");
-          client.println("DATA from Client");
-          while(client.available()==0)
+          client.write("GET / HTTP/1.1\n");  
+//          client.write("GET /asciiart/pizza.txt HTTP/1.1\n");
+          client.write("Host: www.google.ca\n");
+//          client.write("Host: fiikus.net\n");
+          client.write("Connection: close\n");
+          client.println();
+          
+          while((client.waitAvailable(2000)) > 0)
             {
-              if (next - millis() < 0)
-                goto close;
-            }
-          int size;
-          while((size = client.available()) > 0)
-            {
-              uint8_t* msg = (uint8_t*)malloc(size);
-              size = client.read(msg,size);
-              Serial.write(msg,size);
-              free(msg);
+              Serial.write(client.read());
+              if(counter > 100){ Serial.println(" "); counter=0;}
+               counter++;
             }
 close:
           //disconnect client

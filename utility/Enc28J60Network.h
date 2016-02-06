@@ -34,7 +34,7 @@
 #if defined(ESP8266)
 #define ENC28J60_CONTROL_CS     5
 #elif defined(ENERGIA)
-#define ENC28J60_CONTROL_CS     10
+#define ENC28J60_CONTROL_CS     13
 #else
 #define ENC28J60_CONTROL_CS     SS
 #endif
@@ -50,6 +50,9 @@
 #define SPI_SS          ENC28J60_CONTROL_CS
 
 #define UIP_RECEIVEBUFFERHANDLE 0xff
+
+#define UIP_SENDBUFFER_PADDING 7
+#define UIP_SENDBUFFER_OFFSET 1
 
 //#define ENC28J60DEBUG
 
@@ -96,7 +99,7 @@ public:
   static memhandle receivePacket();
   static void freePacket();
   static memaddress blockSize(memhandle handle);
-  static void sendPacket(memhandle handle);
+  static bool sendPacket(memhandle handle);
   static uint16_t readPacket(memhandle handle, memaddress position, uint8_t* buffer, uint16_t len);
   static uint16_t writePacket(memhandle handle, memaddress position, uint8_t* buffer, uint16_t len);
   static void copyPacket(memhandle dest, memaddress dest_pos, memhandle src, memaddress src_pos, uint16_t len);

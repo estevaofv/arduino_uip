@@ -42,7 +42,6 @@ extern "C"
 
 #define UIPETHERNET_FREEPACKET 1
 #define UIPETHERNET_SENDPACKET 2
-#define UIPETHERNET_BUFFERREAD 4
 
 #define uip_ip_addr(addr, ip) do { \
                      ((u16_t *)(addr))[0] = HTONS(((ip[0]) << 8) | (ip[1])); \
@@ -80,6 +79,8 @@ public:
   IPAddress subnetMask();
   IPAddress gatewayIP();
   IPAddress dnsServerIP();
+  
+  void update();
 
 private:
   static memhandle in_packet;
